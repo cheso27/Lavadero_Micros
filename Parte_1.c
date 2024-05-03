@@ -48,12 +48,34 @@ void off_LavHorizontal(){
 
 void lavaderoHorizontal(){
 	// Si detecta final de carrera al subir o bajar rodillo => paro y cambio sentido motor
-	if (limit_switch_lavH = 1 && isBitSet(REG_M3_en_PORT,PIN_M3_en_PORT)){
-		stop_AlturaH();
-		toggleBit(REG_M3_di_PORT,PIN_M3_di_PORT);
+	if (limit_switch_lavH == 1 && isBitSet(REG_M3_en_PORT,PIN_M3_en_PORT)){  // devuelve '1' si detecta fin de carrera Y si el motor esta encendido
+		// stop_AlturaH(); //para el rodillo
+		clearBit(REG_M4_en_PORT,PIN_M4_en_PORT) //deja de girar el rodillo
+		toggleBit(REG_M3_di_PORT,PIN_M3_di_PORT); // cambia el sentido del motor
+		if (isBitSet(REG_M3_di_PORT,PIN_M3_di_PORT)){ //el rodillo esta abajo 
+			upLavHorizontal(); //vuelvo a la posicion inicial(arriba)
+		}else{ //el rodillo esta arriba
+			stop_AlturaH(); //me quedo en la posicion inicial(arriba)
+		}
 	}
 
 	if(aux_lavH){
+		if (lav_H[0] == 1 && (lav_H[1] == 0 || lav_H[2] == 0)){
+			stop_AlturaH();
+		} else if(lav_H[0]==1 && lav_H[1]==1){
+			upLavHorizontal();
+		} else {
+	           	down_LavHorizontal();
+	        }
+		/*if(lav_H[0]==1 && lav_H[1]==1){
+				upLavHorizontal();
+		} else if(lav_H[2]==0 && lav_H[1]==0){
+				down_LavHorizontal();
+		} else {
+	            stop_AlturaH();
+	        }*/
+	    }
+		
 		// Incluyo manejo: upLavHorizontal(); downLavHorizontal(); stopLavHorizontal(); 
 		/* Ejemplo
 			if(lav_H[0]=0 && lav_H[1]=0){
