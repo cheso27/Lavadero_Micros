@@ -16,7 +16,7 @@ volatile uint8_t prev_lav_H[3] = {0,0,0};
 volatile uint8_t aux_lavH = 0;
 volatile uint8_t limit_switch_lavH = 0; //'1' SW2 detecta rodillo abajo
 	// Variables globales - Secado
-volatile uint8_t secado[3] = {0,0,0}; // lav_H[0] para SO7, lav_H[1] para SO8, lav_H[2] para SO9
+volatile uint8_t secado[3] = {0,0,0}; // secado[0] para SO7, secado[1] para SO8, secado[2] para SO9
 volatile uint8_t prev_secado[3] = {0,0,0};
 volatile uint8_t aux_secado = 0;
 volatile uint8_t limit_switch_secado = 0; //'1' SW3 detecta secador abajo
@@ -107,7 +107,7 @@ ISR(TIMER1_COMPA_vect){ // Segundos
 ISR(TIMER3_COMPA_vect){ // Milisegundos
 	ms++;
 	// CONTINUARÁ
-	if(ms % Check_height_sensors == 0){ //#define macro en General.h
+	if(ms % Check_height_sensors == 0){ //#define macro en General.h, tenemos que definir check_height_sensors en ms
 		prev_lav_H = lav_H;
 		//lav_H[0] = REG_S03_PIN & (1<<PIN_SO3_PIN); //REG_S03_PIN sustituir por etiqueta correcta
 		//lav_H[1] = REG_S04_PIN & (1<<PIN_SO4_PIN); //REG_S04_PIN sustituir por etiqueta correcta
@@ -123,17 +123,17 @@ ISR(TIMER3_COMPA_vect){ // Milisegundos
 		lav_H[2] = isBitSet(REG_S09_PIN,PIN_SO9_PIN); //REG_S09_PIN sustituir por etiqueta correcta
 		limit_switch_secado = isClrSet(REG_SW_PIN,PIN_SW3_PIN); // isClrSet porque SW3 '0' al detectar
 		
-		if(prev_lav_H == lav_H){ // Filtrado rebotes
+		if(prev_lav_H == lav_H){ // Filtrado rebotes lavado
 			aux_lavH = 1;
 		}
 		
-		if(prev_secado == secado){ // Filtrado rebotes
+		if(prev_secado == secado){ // Filtrado rebotes secado
 			aux_secado = 1;
 		}
 	}
 	
-	if (enable_prove_new && (ms-cnt_prove_new > Tiempo_prove_new)){
-		enable_prove_new = 0;
+	if (enable_prove_new && (ms-cnt_prove_new > Tiempo_prove_new)){ //Comprueba si ha pasado cierto tiempo desde la última verificación
+		enable_prove_new = 0; //Desactiva la bandera de verificación
 	}
 	
 }
